@@ -102,7 +102,14 @@ function getBatchFromPool()
 
 function returnBatchToPool(batch: Batch)
 {
+    // a pooled batch must not keep anything it drew alive: the texture sources, the id table
+    // they are looked up in, and the bind groups the adaptors attached (which also pin the
+    // sources through the GPU garbage collector). The next batch to reuse it refills all three.
+    batch.textures.clear();
     batch.elements = null;
+    batch.bindGroup = null;
+    batch.gpuBindGroup = null;
+
     batchPool[batchPoolIndex++] = batch;
 }
 

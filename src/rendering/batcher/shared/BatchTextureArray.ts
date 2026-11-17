@@ -25,12 +25,17 @@ export class BatchTextureArray
     /** Clear the textures and their locations. */
     public clear(): void
     {
+        const ids = this.ids;
+
         for (let i = 0; i < this.count; i++)
         {
             const t = this.textures[i];
 
             this.textures[i] = null;
-            this.ids[t.uid] = null;
+
+            // delete the key rather than null it: the table is reused by a pooled batch, and
+            // nulled entries would accumulate one key per texture the batch ever held
+            delete ids[t.uid];
         }
 
         this.count = 0;
